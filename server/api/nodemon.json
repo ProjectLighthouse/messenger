@@ -1,0 +1,4 @@
+{
+  "verbose": true,
+  "ignore": ["public/*", "sessions/*", "memstats.txt", "test/*"]
+}

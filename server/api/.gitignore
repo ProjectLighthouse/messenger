@@ -1,0 +1,13 @@
+.DS_STORE
+/.eslintcache
+/.tern-port
+/memstats.txt
+node_modules/
+/npm-debug.log
+/public/
+/sessions/
+.env
+dump.rdb
+dist/
+swagger-editor
+package-lock.json

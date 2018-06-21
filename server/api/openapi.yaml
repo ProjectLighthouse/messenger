@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  title: Project Lighthouse API
+  version: 0.2.0
+
+servers:
+  - url: https://api-test.project-lighthouse.org/api
+    description: testing
+  - url: http://localhost:8000/api
+    description: local
+

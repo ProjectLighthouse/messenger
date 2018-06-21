@@ -1,0 +1,41 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "arrow-body-style": 0,
+    "react/prop-types": 0,
+    "react/jsx-no-bind": 0,
+    "no-restricted-syntax": 0,
+    "no-prototype-builtins": 0,
+    "new-cap": [
+      2,
+      {
+        "capIsNewExceptions": [
+          "Immutable.Map",
+          "Immutable.List",
+          "Sequelize.ENUM",
+          "Sequelize.STRING",
+          "Immutable.OrderedMap",
+          "Immutable.fromJS"
+        ]
+      }
+    ],
+    "import/no-unresolved": [2, { "amd": true }],
+    "no-console": 0,
+    "func-names": 0,
+    "strict": 0,
+    "no-param-reassign": [2, { "props": false }],
+    "max-len": 0,
+    "prefer-arrow-callback": 0,
+    "no-underscore-dangle": [
+      2,
+      {
+        "allowAfterThis": true,
+        "allow": ["_id", "_geoloc"]
+      }
+    ],
+    "no-unused-vars": [2, {"varsIgnorePattern": "^[A-Z][a-z]*"}]
+  },
+  "settings": {
+    "import/resolver": "webpack"
+  }
+}
