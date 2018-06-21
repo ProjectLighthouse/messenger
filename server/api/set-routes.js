@@ -16,7 +16,7 @@ module.exports = function (app) {
   app.post('/api/conversation/:sender/:recipient', ConversationApi.sendMessageToRecipients);
   app.post('/api/conversation/:conversation/:sender', ConversationApi.sendMessageToAll);
 
-  app.del('/api/conversation/:conversationID/members', ConversationApi.removeMembers);
+  app.delete('/api/conversation/:conversationID/members', ConversationApi.removeMembers);
   app.get('/api/conversation/:conversationID/members', ConversationApi.getMembers);
   app.post('/api/conversation/:conversationID/members', ConversationApi.addMembers);
   app.put('/api/conversation/:conversationID/members', ConversationApi.updateMembers);
