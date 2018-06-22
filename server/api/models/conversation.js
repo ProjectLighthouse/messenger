@@ -36,6 +36,9 @@ const ConversationSchema = new Schema({
       },
     },
   ],
+  emailAlias: {
+    type: String,
+  },
   messages: [
     {
       sender: {
