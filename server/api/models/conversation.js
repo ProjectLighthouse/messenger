@@ -7,6 +7,10 @@ const ConversationSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
+  created: {
+    type: Date,
+    default: Date.now,
+  },
   members: [
     {
       name: {
@@ -24,7 +28,6 @@ const ConversationSchema = new Schema({
       permissions: [{
         rule: {
           type: String,
-          required: true,
         },
       }],
       last_read_message: {
@@ -81,4 +84,52 @@ ConversationSchema
 });
 
 const Conversation = mongoose.model('Conversation', ConversationSchema);
-module.exports = Object.assign(Conversation, {});
+module.exports = Object.assign(Conversation, {
+  getAllConversations(sender) {
+    return Conversation.find({ 'messages.sender': sender }).lean();
+  },
+  getConversationByRecipients(recipient) {
+    return Conversation.find({ 'members.foreign_key_id': recipient }).lean();
+  },
+  sendMessageToRecipients(reference, sender, message, members) {
+    return Conversation
+    .findOne({ reference })
+    .then((conversation) => {
+      if (conversation) {
+        return conversation;
+      }
+      const newConversation = new Conversation({
+        reference,
+      });
+      newConversation.members = members.map(m => {
+        return ({
+          name: m.name,
+          foreign_key_id: m._id,
+        });
+      });
+      newConversation.messages.push({ sender, message });
+      return newConversation.save();
+    });
+  },
+  sendMessageToAll(req, res) {
+    res.send();
+  },
+  addMembers(req, res) {
+    res.send();
+  },
+  getMembers(req, res) {
+    res.send();
+  },
+  removeMembers(req, res) {
+    res.send();
+  },
+  updateMembers(req, res) {
+    res.send();
+  },
+  getDeliveredStatus(req, res) {
+    res.send();
+  },
+  getDeliveredStatusByMember(req, res) {
+    res.send();
+  },
+});
