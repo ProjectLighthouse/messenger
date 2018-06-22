@@ -91,7 +91,7 @@ module.exports = Object.assign(Conversation, {
   getConversationByRecipients(recipient) {
     return Conversation.find({ 'members.foreign_key_id': recipient }).lean();
   },
-  sendMessageToRecipients(reference, sender, message, members) {
+  sendMessageToAll(reference, sender, message, members) {
     return Conversation
     .findOne({ reference })
     .then((conversation) => {
@@ -111,17 +111,33 @@ module.exports = Object.assign(Conversation, {
       return newConversation.save();
     });
   },
-  sendMessageToAll(req, res) {
-    res.send();
+  addMembers(_id, members) {
+    return Conversation
+    .findOne({ _id })
+    .then((conversation) => {
+      conversation.members.concat(members.map(m => {
+        return ({
+          name: m.name,
+          foreign_key_id: m._id,
+        });
+      }));
+      return conversation.save();
+    });
   },
-  addMembers(req, res) {
-    res.send();
+  getMembers(_id, reference) {
+    return Conversation
+    .findOne({ _id, reference })
+    .then((conversation) => {
+      return conversation.members;
+    });
   },
-  getMembers(req, res) {
-    res.send();
-  },
-  removeMembers(req, res) {
-    res.send();
+  removeMembers(_id, reference, foreignKeyId) {
+    return Conversation
+    .findOne({ _id, reference })
+    .then((conversation) => {
+      conversation.members = conversation.members.filter(m => m.foreign_key_id !== foreignKeyId);
+      return conversation.members;
+    });
   },
   updateMembers(req, res) {
     res.send();
