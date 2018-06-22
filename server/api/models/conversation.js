@@ -55,23 +55,27 @@ const ConversationSchema = new Schema({
         default: Date.now,
       },
       delivered: [
-      { email: {
-        type: String,
-        default: '',
-      },
-      timestamp: {
-        type: Date,
-        default: Date.now,
-      },
-      recipients: [
         {
           email: {
             type: String,
             default: '',
           },
-        },
-      ],
-    }],
+          timestamp: {
+            type: Date,
+          },
+          recipients: [
+            {
+              email: {
+                type: String,
+                default: '',
+              },
+              foreign_key_id: {
+                type: Schema.Types.ObjectId,
+                required: true,
+              },
+            },
+          ],
+        }],
     },
   ],
 }, {
@@ -142,13 +146,20 @@ module.exports = Object.assign(Conversation, {
       return conversation.members;
     });
   },
-  updateMembers(req, res) {
-    res.send();
+  updateMembers(_id, foreignKeyId, member) {
+    return Conversation
+    .update({ _id, 'members.foreign_key_id': foreignKeyId },
+    { $set: { 'members.$.name': member.name,
+    'items.$.photo': member.photo, 'members.$.permissions': member.permissions } });
   },
-  getDeliveredStatus(req, res) {
-    res.send();
+  getDeliveredStatus(_id) {
+    return Conversation.find({ _id }).lean().then((conversation) => {
+      return conversation.delivered;
+    });
   },
-  getDeliveredStatusByMember(req, res) {
-    res.send();
+  getDeliveredStatusByMember(_id, foreignKeyId) {
+    return Conversation.find({ _id, 'delivered.recipients.foreign_key_id': foreignKeyId }).lean().then((conversation) => {
+      return conversation.delivered;
+    });
   },
 });
