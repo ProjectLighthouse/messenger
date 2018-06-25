@@ -13,7 +13,7 @@ module.exports = function (app) {
 
   app.get('/api/conversation/:sender', ConversationApi.getAllConversations);
   app.get('/api/conversation/recipient/:recipient', ConversationApi.getConversationByRecipients);
-  app.post('/api/conversation/send/:sender', ConversationApi.sendMessageToAll);
+  app.post('/api/conversation/send/:sender', ConversationApi.sendConversationToAll);
 
   app.post('/api/conversation/:conversationId/members', ConversationApi.addMembers);
   app.delete('/api/conversation/:conversationId/:referenceId/members', ConversationApi.removeMembers);
