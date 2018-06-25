@@ -17,6 +17,10 @@ const ConversationSchema = new Schema({
         type: String,
         required: true,
       },
+      email: {
+        type: String,
+        required: true,
+      },
       photo: {
         type: String,
         required: true,
@@ -41,6 +45,10 @@ const ConversationSchema = new Schema({
   },
   messages: [
     {
+      // amazon ses message ID
+      messageId: {
+        type: String,
+      },
       sender: {
         type: Schema.Types.ObjectId,
         required: true,
@@ -63,18 +71,6 @@ const ConversationSchema = new Schema({
           timestamp: {
             type: Date,
           },
-          recipients: [
-            {
-              email: {
-                type: String,
-                default: '',
-              },
-              foreign_key_id: {
-                type: Schema.Types.ObjectId,
-                required: true,
-              },
-            },
-          ],
         }],
     },
   ],
@@ -111,6 +107,8 @@ module.exports = Object.assign(Conversation, {
       newConversation.members = members.map(m => {
         return ({
           name: m.name,
+          email: m.email,
+          photo: m.photo,
           foreign_key_id: m._id,
         });
       });
@@ -150,10 +148,21 @@ module.exports = Object.assign(Conversation, {
     return Conversation
     .update({ _id, 'members.foreign_key_id': foreignKeyId },
     { $set: { 'members.$.name': member.name,
-    'items.$.photo': member.photo, 'members.$.permissions': member.permissions } });
+    'members.$.email': member.email,
+    'members.$.photo': member.photo,
+    'members.$.permissions': member.permissions } });
   },
   getDeliveredStatus(_id) {
     return Conversation.find({ _id }).lean().then((conversation) => {
+      return conversation.delivered;
+    });
+  },
+  addDeliveredStatus(delivery) {
+    return Conversation.find({ 'messages.messageId': delivery.mail.messageId }).then((conversation) => {
+      conversation.messages[0].delivered.push({
+        email: delivery.delivery.recipients[0],
+        timestamp: delivery.delivery.timestamp,
+      });
       return conversation.delivered;
     });
   },
