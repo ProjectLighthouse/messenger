@@ -23,7 +23,6 @@ const ConversationSchema = new Schema({
       },
       photo: {
         type: String,
-        required: true,
       },
       foreign_key_id: {
         type: Schema.Types.ObjectId,
@@ -36,7 +35,6 @@ const ConversationSchema = new Schema({
       }],
       last_read_message: {
         type: Schema.Types.ObjectId,
-        required: true,
       },
     },
   ],
@@ -82,8 +80,6 @@ ConversationSchema
 .index({
   _id: 1,
   reference: 1,
-  'messages.sender': 1,
-  'members.foreign_key_id': 1,
 });
 
 const Conversation = mongoose.model('Conversation', ConversationSchema);
@@ -94,7 +90,7 @@ module.exports = Object.assign(Conversation, {
   getConversationByRecipients(recipient) {
     return Conversation.find({ 'members.foreign_key_id': recipient }).lean();
   },
-  sendMessageToAll(reference, sender, message, members) {
+  sendConversationToAll(reference, sender, message, members) {
     return Conversation
     .findOne({ reference })
     .then((conversation) => {
@@ -113,6 +109,7 @@ module.exports = Object.assign(Conversation, {
         });
       });
       newConversation.messages.push({ sender, message });
+
       return newConversation.save();
     });
   },
