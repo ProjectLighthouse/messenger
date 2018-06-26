@@ -20,6 +20,6 @@ module.exports = function (app) {
   app.get('/api/conversation/:conversationId/:referenceId/members', ConversationApi.getMembers);
   app.put('/api/conversation/:conversationId/:referenceId/members', ConversationApi.updateMembers);
 
-  app.get('/api/conversation/:conversationID/delivered', ConversationApi.getDeliveredStatus);
-  app.get('/api/conversation/:conversationID/:member/delivered', ConversationApi.getDeliveredStatusByMember);
+  app.get('/api/conversation/:conversationId/delivered', ConversationApi.getDeliveredStatus);
+  app.get('/api/conversation/:conversationId/:member/delivered', ConversationApi.getDeliveredStatusByMember);
 };
