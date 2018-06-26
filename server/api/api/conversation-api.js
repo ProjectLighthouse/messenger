@@ -19,8 +19,8 @@ module.exports = {
   sendConversationToAll(req, res) {
     const { sender } = req.params;
     const body = req.body;
-    Conversation.sendConversationToAll(body.reference, sender, body.Conversation, body.members).then((conversation) => {
-      req.io.emit('new_message', conversation);
+    Conversation.sendConversationToAll(body.reference, sender, body.message, body.members).then((conversation) => {
+      global.io.emit('new_message', conversation);
       return res.send(conversation);
     });
   },
@@ -28,7 +28,7 @@ module.exports = {
     const { conversationId } = req.params;
     const body = req.body;
     Conversation.addMembers(conversationId, body.members).then((conversation) => {
-      req.io.emit('update_memebers', conversation);
+      global.io.emit('update_memebers', conversation);
       return res.send(conversation);
     });
   },
@@ -42,7 +42,7 @@ module.exports = {
     const { conversationId, referenceId } = req.params;
     const body = req.body;
     Conversation.removeMembers(conversationId, referenceId, body.foreignKeyId).then((conversation) => {
-      req.io.emit('update_memebers', conversation);
+      global.io.emit('update_memebers', conversation);
       return res.send(conversation);
     });
   },
@@ -50,7 +50,7 @@ module.exports = {
     const { conversationId, referenceId } = req.params;
     const body = req.body;
     Conversation.updateMembers(conversationId, referenceId, body.member).then((conversation) => {
-      req.io.emit('update_memebers', conversation);
+      global.io.emit('update_memebers', conversation);
       return res.send(conversation);
     });
   },
