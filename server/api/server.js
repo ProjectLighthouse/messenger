@@ -18,6 +18,7 @@ const io = require('socket.io')(http);
 const port = process.env.API_PORT || 8000;
 
 require('./set-middleware')(app);
+require('./set-routes')(app);
 
 const { logger } = require('./helpers/log');
 
@@ -33,12 +34,7 @@ io.on('connection', function (socket) {
   console.log('socket.io connection made');
 });
 
-app.use(function (req, res, next) {
-  req.io = io;
-  next();
-});
-
-require('./set-routes')(app);
+global.io = io;
 
 http.listen(port, function () {
   logger.info(`Started Project Lighthouse Rest API - listening on ${port}`);
