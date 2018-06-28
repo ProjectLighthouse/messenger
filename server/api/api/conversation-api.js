@@ -33,36 +33,37 @@ module.exports = {
     });
   },
   getMembers(req, res) {
-    const { conversationId, referenceId } = req.params;
-    Conversation.getMembers(conversationId, referenceId).then((conversation) => {
+    const { conversationId } = req.params;
+    Conversation.getMembers(conversationId).then((conversation) => {
       return res.send(conversation);
     });
   },
   removeMembers(req, res) {
-    const { conversationId, referenceId } = req.params;
+    const { conversationId } = req.params;
     const body = req.body;
-    Conversation.removeMembers(conversationId, referenceId, body.foreignKeyId).then((conversation) => {
+    Conversation.removeMembers(conversationId, body.foreignKeyId).then((conversation) => {
       global.io.emit('update_memebers', conversation);
       return res.send(conversation);
     });
   },
   updateMembers(req, res) {
-    const { conversationId, referenceId } = req.params;
+    const { conversationId, foreignKeyId } = req.params;
     const body = req.body;
-    Conversation.updateMembers(conversationId, referenceId, body.member).then((conversation) => {
+    Conversation.updateMembers(conversationId, foreignKeyId, body.member).then((conversation) => {
       global.io.emit('update_memebers', conversation);
       return res.send(conversation);
     });
   },
   getDeliveredStatus(req, res) {
-    const { id } = req.params;
-    Conversation.getDeliveredStatus(id).then((conversation) => {
+    const { conversationId, messageId } = req.params;
+    Conversation.getDeliveredStatus(conversationId, messageId).then((conversation) => {
       return res.send(conversation);
     });
   },
   getDeliveredStatusByMember(req, res) {
-    const { id, foreignKeyId } = req.params;
-    Conversation.getDeliveredStatusByMember(id, foreignKeyId).then((conversation) => {
+    const { conversationId, foreignKeyId } = req.params;
+    console.log(conversationId, foreignKeyId);
+    return Conversation.getDeliveredStatusByMember(conversationId, foreignKeyId).then((conversation) => {
       return res.send(conversation);
     });
   },
