@@ -40,4 +40,22 @@ describe('Conversation', function () {
       });
     });
   });
+  describe('GET /api/conversation/:sender', function () {
+    it('Get all conversations by sender', function () {
+      return ConversationApi.getAllConversations(globalSender)
+      .then((conversation) => {
+        expect(conversation).to.be.an('array').and.to.have.lengthOf(1);
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
+  describe('GET /api/conversation/recipient/:recipient', function () {
+    it('Get all conversations by recipient', function () {
+      return ConversationApi.getConversationByRecipients(globalRecipient)
+      .then((conversation) => {
+        expect(conversation).to.be.an('array');
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
 });

@@ -37,6 +37,20 @@ const request = {
       jar: true,
     });
   },
+  delete(endpoint, body) {
+    const url = `${basePath}${endpoint}`;
+
+    return requestPromise.delete({
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      followAllRedirects: true,
+      url,
+      body,
+      json: true,
+      jar: true,
+    });
+  },
   put(endpoint, body) {
     const url = `${basePath}${endpoint}`;
 
