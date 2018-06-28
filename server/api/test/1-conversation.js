@@ -101,4 +101,15 @@ describe('Conversation', function () {
       });
     });
   });
+  describe('DELETE /api/conversation/:conversationId/members', function () {
+    it('Delete members by conversation', function () {
+      return ConversationApi.removeMembers(global.conversationId, {
+        foreignKeyId: globalRecipient,
+      })
+      .then((conversation) => {
+        expect(conversation).to.be.an('array');
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
 });
