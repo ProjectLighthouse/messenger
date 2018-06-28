@@ -58,4 +58,22 @@ describe('Conversation', function () {
       });
     });
   });
+  describe('POST /api/conversation/:conversationId/members', function () {
+    it('Add members into conversation', function () {
+      return ConversationApi.addMembers(global.conversationId, {
+        members: [
+          {
+            name: 'New User',
+            photo: '',
+            email: 'newuser@email.com',
+            _id: Misc.mongoObjectId(),
+          },
+        ],
+      })
+      .then((conversation) => {
+        expect(conversation).to.be.an('object');
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
 });
