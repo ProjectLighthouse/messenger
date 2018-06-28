@@ -23,21 +23,21 @@ module.exports = {
     // body.members
     return request.post(`/conversation/${conversationId}/members`, body);
   },
-  getMembers(conversationId, referenceId) {
-    return request.get(`/conversation/${conversationId}/${referenceId}/members`);
+  getMembers(conversationId) {
+    return request.get(`/conversation/${conversationId}/members`);
   },
-  removeMembers(conversationId, referenceId, body) {
+  removeMembers(conversationId, body) {
     // body.foreignKeyId
-    return request.delete(`/conversation/${conversationId}/${referenceId}/members`, body);
+    return request.delete(`/conversation/${conversationId}/members`, body);
   },
-  updateMembers(conversationId, referenceId, body) {
+  updateMembers(conversationId, foreignKeyId, body) {
     // body.member
-    return request.put(`/conversation/${conversationId}/${referenceId}/members`, body);
+    return request.put(`/conversation/${conversationId}/${foreignKeyId}/members`, body);
   },
-  getDeliveredStatus(conversationId) {
-    return request.get(`/conversation/${conversationId}/delivered`);
+  getDeliveredStatus(conversationId, messageId) {
+    return request.get(`/conversation/${conversationId}/${messageId}/delivered`);
   },
-  getDeliveredStatusByMember(conversationId, member) {
-    return request.get(`/conversation/${conversationId}/${member}/delivered`);
+  getDeliveredStatusByMember(conversationId, foreignKeyId) {
+    return request.get(`/conversation/${conversationId}/${foreignKeyId}/delivered`);
   },
 };
