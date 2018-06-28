@@ -121,4 +121,13 @@ describe('Conversation', function () {
       });
     });
   });
+  describe('GET /api/conversation/:conversationId/:foreignKeyId/delivered', function () {
+    it('Get delivered status by Member', function () {
+      return ConversationApi.getDeliveredStatusByMember(global.conversationId, globalRecipient)
+      .then((conversation) => {
+        expect(conversation).to.be.an('array');
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
 });
