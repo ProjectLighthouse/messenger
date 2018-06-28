@@ -66,6 +66,10 @@ const ConversationSchema = new Schema({
             type: String,
             default: '',
           },
+          foreign_key_id: {
+            type: Schema.Types.ObjectId,
+            required: true,
+          },
           timestamp: {
             type: Date,
           },
@@ -117,25 +121,27 @@ module.exports = Object.assign(Conversation, {
     return Conversation
     .findOne({ _id })
     .then((conversation) => {
-      conversation.members.concat(members.map(m => {
-        return ({
+      const newMembers = members.map(m => {
+        return {
           name: m.name,
+          email: m.email,
           foreign_key_id: m._id,
-        });
-      }));
+        };
+      });
+      conversation.members = [...conversation.members, ...newMembers];
       return conversation.save();
     });
   },
-  getMembers(_id, reference) {
+  getMembers(_id) {
     return Conversation
-    .findOne({ _id, reference })
+    .findOne({ _id })
     .then((conversation) => {
       return conversation.members;
     });
   },
-  removeMembers(_id, reference, foreignKeyId) {
+  removeMembers(_id, foreignKeyId) {
     return Conversation
-    .findOne({ _id, reference })
+    .findOne({ _id })
     .then((conversation) => {
       conversation.members = conversation.members.filter(m => m.foreign_key_id !== foreignKeyId);
       return conversation.members;
@@ -149,9 +155,12 @@ module.exports = Object.assign(Conversation, {
     'members.$.photo': member.photo,
     'members.$.permissions': member.permissions } });
   },
-  getDeliveredStatus(_id) {
-    return Conversation.find({ _id }).lean().then((conversation) => {
-      return conversation.delivered;
+  getDeliveredStatus(_id, messageId) {
+    return Conversation.findOne({ _id, 'messages._id': messageId }).lean().then((conversation) => {
+      if (conversation) {
+        return conversation.messages[0].delivered;
+      }
+      return [];
     });
   },
   addDeliveredStatus(delivery) {
@@ -164,8 +173,8 @@ module.exports = Object.assign(Conversation, {
     });
   },
   getDeliveredStatusByMember(_id, foreignKeyId) {
-    return Conversation.find({ _id, 'delivered.recipients.foreign_key_id': foreignKeyId }).lean().then((conversation) => {
-      return conversation.delivered;
+    return Conversation.find({ _id, 'messages.delivered.foreign_key_id': foreignKeyId }).lean().then((conversation) => {
+      return conversation;
     });
   },
 });
