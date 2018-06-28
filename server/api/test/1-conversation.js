@@ -112,4 +112,13 @@ describe('Conversation', function () {
       });
     });
   });
+  describe('GET /api/conversation/:conversationId/delivered', function () {
+    it('Get delivered status', function () {
+      return ConversationApi.getDeliveredStatus(global.conversationId, global.messageId)
+      .then((conversation) => {
+        expect(conversation).to.be.an('array');
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
 });
