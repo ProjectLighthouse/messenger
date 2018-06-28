@@ -76,4 +76,13 @@ describe('Conversation', function () {
       });
     });
   });
+  describe('GET /api/conversation/:conversationId/members', function () {
+    it('GET members by conversation', function () {
+      return ConversationApi.getMembers(global.conversationId)
+      .then((conversation) => {
+        expect(conversation).to.be.an('array');
+        expect(conversation).to.be.ok;
+      });
+    });
+  });
 });
