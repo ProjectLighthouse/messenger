@@ -16,10 +16,10 @@ module.exports = function (app) {
   app.post('/api/conversation/send/:sender', ConversationApi.sendConversationToAll);
 
   app.post('/api/conversation/:conversationId/members', ConversationApi.addMembers);
-  app.delete('/api/conversation/:conversationId/:referenceId/members', ConversationApi.removeMembers);
-  app.get('/api/conversation/:conversationId/:referenceId/members', ConversationApi.getMembers);
-  app.put('/api/conversation/:conversationId/:referenceId/members', ConversationApi.updateMembers);
+  app.delete('/api/conversation/:conversationId/members', ConversationApi.removeMembers);
+  app.get('/api/conversation/:conversationId/members', ConversationApi.getMembers);
+  app.put('/api/conversation/:conversationId/:foreignKeyId/members', ConversationApi.updateMembers);
 
-  app.get('/api/conversation/:conversationId/delivered', ConversationApi.getDeliveredStatus);
-  app.get('/api/conversation/:conversationId/:member/delivered', ConversationApi.getDeliveredStatusByMember);
+  app.get('/api/conversation/:conversationId/:messageId/delivered', ConversationApi.getDeliveredStatus);
+  app.get('/api/conversation/:conversationId/:foreignKeyId/delivered', ConversationApi.getDeliveredStatusByMember);
 };
