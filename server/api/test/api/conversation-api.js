@@ -9,30 +9,39 @@ module.exports = {
       userId,
     });
   },
-  getAllConversations(sender) {
-    return request.get(`/conversation/${sender}`);
+  newConversation(body) {
+    return request.post('/conversations/', body);
   },
-  getConversationByRecipients(recipient) {
-    return request.get(`/conversation/recipient/${recipient}`);
+  getConversations() {
+    return request.get('/conversations');
   },
-  sendConversationToAll(sender, body) {
+  getConversationById(conversationId) {
     // body.reference, body.message, body.members
-    return request.post(`/conversation/send/${sender}`, body);
+    return request.get(`/conversations/${conversationId}`);
+  },
+  getSenders(conversationId) {
+    return request.get(`/conversations/${conversationId}/senders`);
+  },
+  getMembers(conversationId) {
+    return request.get(`/conversations/${conversationId}/members`);
   },
   addMembers(conversationId, body) {
     // body.members
-    return request.post(`/conversation/${conversationId}/members`, body);
-  },
-  getMembers(conversationId) {
-    return request.get(`/conversation/${conversationId}/members`);
+    return request.post(`/conversations/${conversationId}/members`, body);
   },
   removeMembers(conversationId, body) {
     // body.foreignKeyId
     return request.delete(`/conversation/${conversationId}/members`, body);
   },
-  updateMembers(conversationId, foreignKeyId, body) {
+  updateMembers(foreignKeyId, body) {
     // body.member
-    return request.put(`/conversation/${conversationId}/${foreignKeyId}/members`, body);
+    return request.put(`/conversation/${foreignKeyId}/members`, body);
+  },
+  leaveConversation(conversationId, body) {
+    return request.post(`/api/conversations/${conversationId}/leave`, body);
+  },
+  getConversationsByReference(referenceId) {
+    return request.post(`/api/${referenceId}/conversations`);
   },
   getDeliveredStatus(conversationId, messageId) {
     return request.get(`/conversation/${conversationId}/${messageId}/delivered`);
