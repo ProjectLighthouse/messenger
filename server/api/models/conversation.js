@@ -1,6 +1,8 @@
 'use strict';
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const User = require('./user');
+const Message = require('./message');
 
 const ConversationSchema = new Schema({
   reference: {
@@ -13,28 +15,16 @@ const ConversationSchema = new Schema({
   },
   members: [
     {
-      name: {
-        type: String,
-        required: true,
-      },
-      email: {
-        type: String,
-        required: true,
-      },
-      photo: {
-        type: String,
-      },
-      foreign_key_id: {
+      member: {
         type: Schema.Types.ObjectId,
-        required: true,
+        ref: 'User',
       },
-      permissions: [{
-        rule: {
-          type: String,
-        },
-      }],
       last_read_message: {
         type: Schema.Types.ObjectId,
+      },
+      leaved: {
+        type: Boolean,
+        default: false,
       },
     },
   ],
@@ -43,39 +33,16 @@ const ConversationSchema = new Schema({
   },
   messages: [
     {
-      // amazon ses message ID
-      messageId: {
-        type: String,
-      },
-      sender: {
-        type: Schema.Types.ObjectId,
-        required: true,
-      },
       message: {
-        type: String,
-        default: '',
-        required: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Message',
       },
-      created: {
-        type: Date,
-        default: Date.now,
-      },
-      delivered: [
-        {
-          email: {
-            type: String,
-            default: '',
-          },
-          foreign_key_id: {
-            type: Schema.Types.ObjectId,
-            required: true,
-          },
-          timestamp: {
-            type: Date,
-          },
-        }],
     },
   ],
+  archived: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   usePushEach: true,
 });
@@ -88,48 +55,49 @@ ConversationSchema
 
 const Conversation = mongoose.model('Conversation', ConversationSchema);
 module.exports = Object.assign(Conversation, {
-  getAllConversations(sender) {
-    return Conversation.find({ 'messages.sender': sender }).lean();
+  newConversation(body) {
+    const newConversation = new Conversation({
+      reference: body.reference,
+    });
+    newConversation.members = body.members.map(m => {
+      return ({
+        member: User.getOrCreate(m),
+      });
+    });
+    const newMessage = Message.newMessage(body.sender, body.message);
+    newConversation.messages.push({ message: newMessage._id });
+    return newConversation.save();
   },
-  getConversationByRecipients(recipient) {
-    return Conversation.find({ 'members.foreign_key_id': recipient }).lean();
+  addMessage(_id, body) {
+    const newMessage = Message.newMessage(body.sender, body.message);
+    return Conversation.update({ _id }, { $push: { messages: newMessage } });
   },
-  sendConversationToAll(reference, sender, message, members) {
+  getConversations(archived) {
     return Conversation
-    .findOne({ reference })
-    .then((conversation) => {
-      if (conversation) {
-        return conversation;
-      }
-      const newConversation = new Conversation({
-        reference,
-      });
-      newConversation.members = members.map(m => {
-        return ({
-          name: m.name,
-          email: m.email,
-          photo: m.photo,
-          foreign_key_id: m._id,
-        });
-      });
-      newConversation.messages.push({ sender, message });
-
-      return newConversation.save();
+    .find({ archived })
+    .then((conversations) => {
+      return conversations;
     });
   },
-  addMembers(_id, members) {
+  getConversationById(_id) {
     return Conversation
     .findOne({ _id })
     .then((conversation) => {
-      const newMembers = members.map(m => {
-        return {
-          name: m.name,
-          email: m.email,
-          foreign_key_id: m._id,
-        };
+      return conversation;
+    });
+  },
+  getSenders(_id) {
+    return Conversation
+    .findOne({ _id })
+    .then((conversations) => {
+      let messages = [];
+      messages = [...messages, ...conversations.map((c) => {
+        return c.messages;
+      })];
+      const senders = messages.map(m => {
+        return m.sender;
       });
-      conversation.members = [...conversation.members, ...newMembers];
-      return conversation.save();
+      return senders;
     });
   },
   getMembers(_id) {
@@ -139,21 +107,41 @@ module.exports = Object.assign(Conversation, {
       return conversation.members;
     });
   },
-  removeMembers(_id, foreignKeyId) {
-    return Conversation
-    .findOne({ _id })
-    .then((conversation) => {
-      conversation.members = conversation.members.filter(m => m.foreign_key_id !== foreignKeyId);
-      return conversation.members;
+  addMembers(_id, members) {
+    const newMembers = members.map(m => {
+      return {
+        member: User.getOrCreate({
+          name: m.name,
+          email: m.email,
+          foreignKeyId: m._id,
+        })._id,
+      };
+    });
+    return Conversation.update({ _id }, { $push: { members: newMembers } });
+  },
+  removeMembers(_id, userId) {
+    return Conversation.update({ _id }, { $pull: { members: { member: userId } } });
+  },
+  updateMembers(foreignKeyId, member) {
+    return User.update(foreignKeyId, member);
+  },
+  archiveConversation(_id) {
+    return Conversation.update({ _id }, { $set: { archived: true } }).then((conversation) => {
+      return conversation;
     });
   },
-  updateMembers(_id, foreignKeyId, member) {
+  leaveConversation(_id, member) {
+    return Conversation.update({ _id, 'members.member': member },
+    { $set: { 'members.$.leaved': true } }).then((conversation) => {
+      return conversation;
+    });
+  },
+  getConversationsByReference(reference) {
     return Conversation
-    .update({ _id, 'members.foreign_key_id': foreignKeyId },
-    { $set: { 'members.$.name': member.name,
-    'members.$.email': member.email,
-    'members.$.photo': member.photo,
-    'members.$.permissions': member.permissions } });
+    .findOne({ reference })
+    .then((conversation) => {
+      return conversation;
+    });
   },
   getDeliveredStatus(_id, messageId) {
     return Conversation.findOne({ _id, 'messages._id': messageId }).lean().then((conversation) => {
@@ -163,18 +151,19 @@ module.exports = Object.assign(Conversation, {
       return [];
     });
   },
-  addDeliveredStatus(delivery) {
-    return Conversation.find({ 'messages.messageId': delivery.mail.messageId }).then((conversation) => {
-      conversation.messages[0].delivered.push({
-        email: delivery.delivery.recipients[0],
-        timestamp: delivery.delivery.timestamp,
-      });
-      return conversation.delivered;
+  getDeliveredStatusByMember(_id, userId, messageId) {
+    return Message.getMessageById(messageId).then(message => {
+      return message.delivered.filter((d) => d.userId === userId);
     });
   },
-  getDeliveredStatusByMember(_id, foreignKeyId) {
-    return Conversation.find({ _id, 'messages.delivered.foreign_key_id': foreignKeyId }).lean().then((conversation) => {
-      return conversation;
+  addDeliveredStatus(messageId, userId, body) {
+    return Message.getMessageById(messageId).then(message => {
+      message.delivered.push({
+        userId,
+        timestamp: body.timestamp,
+      });
+      return message.save();
     });
   },
 });
+
