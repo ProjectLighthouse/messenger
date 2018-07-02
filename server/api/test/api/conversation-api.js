@@ -31,22 +31,25 @@ module.exports = {
   },
   removeMembers(conversationId, body) {
     // body.foreignKeyId
-    return request.delete(`/conversation/${conversationId}/members`, body);
+    return request.delete(`/conversations/${conversationId}/members`, body);
   },
   updateMembers(foreignKeyId, body) {
     // body.member
-    return request.put(`/conversation/${foreignKeyId}/members`, body);
+    return request.put(`/conversations/${foreignKeyId}/members`, body);
+  },
+  archiveConversation(conversationId) {
+    return request.post(`/conversations/${conversationId}/archive`);
   },
   leaveConversation(conversationId, body) {
-    return request.post(`/api/conversations/${conversationId}/leave`, body);
+    return request.post(`/conversations/${conversationId}/leave`, body);
   },
   getConversationsByReference(referenceId) {
-    return request.post(`/api/${referenceId}/conversations`);
+    return request.get(`/${referenceId}/conversations`);
   },
   getDeliveredStatus(conversationId, messageId) {
-    return request.get(`/conversation/${conversationId}/${messageId}/delivered`);
+    return request.get(`/conversations/${conversationId}/${messageId}/delivered`);
   },
   getDeliveredStatusByMember(conversationId, foreignKeyId) {
-    return request.get(`/conversation/${conversationId}/${foreignKeyId}/delivered`);
+    return request.get(`/conversations/${conversationId}/${foreignKeyId}/delivered`);
   },
 };
