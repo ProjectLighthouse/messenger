@@ -11,3 +11,6 @@ dump.rdb
 dist/
 swagger-editor
 package-lock.json
+.idea/
+.idea
+ngrok

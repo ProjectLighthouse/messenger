@@ -12,9 +12,13 @@ mongoose.Promise = global.Promise;
 const express = require('express');
 
 const app = express();
+//eslint-disable-next-line
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const port = process.env.API_PORT || 8000;
 
 require('./set-middleware')(app);
+require('./set-routes')(app);
 
 const { logger } = require('./helpers/log');
 
@@ -26,8 +30,13 @@ app.use('/', function (req, res, next) {
   next();
 });
 
-require('./set-routes')(app);
+io.on('connection', function (socket) {
+  console.log('socket.io connection made');
+});
 
-app.listen(port, function () {
+global.io = io;
+
+http.listen(port, function () {
   logger.info(`Started Project Lighthouse Rest API - listening on ${port}`);
 });
+
