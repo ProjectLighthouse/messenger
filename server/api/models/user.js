@@ -13,38 +13,30 @@ const API_KEYS_MAX = 4;
 
 const User = mongoose.model('User', new Schema({
   emailAddress: String,
-  hash: {
-    select: false,
-    type: String,
-  },
-  salt: {
-    select: false,
-    type: String,
-  },
+  name: String,
+  password: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  photo: String,
+  permissions: [{
+    rule: {
+      type: String,
+    },
+  }],
+  foreignKeyId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
   authentication: {
     apiKeys: [{
       token: {
         type: String,
       },
-            // TODO: IAM style access rights like "opportunities:read", "opportunities:write", etc
       scope: [{
         enum: ['all'],
         type: String,
       }],
     }],
-    google: {
-      select: false,
-      authenticationToken: String,
-      googleId: String,
-    },
-    facebook: {
-      select: false,
-      accessToken: String,
-      facebookId: String,
-    },
-    select: false,
   },
 }, {
   usePushEach: true,
@@ -53,14 +45,14 @@ const User = mongoose.model('User', new Schema({
   iterations: (process.env.HASH_ITERATIONS ? parseInt(process.env.HASH_ITERATIONS, 10) : 25000),
 }));
 
-function registerUser(volunteer, password) {
+function registerUser(newUser, password) {
   return new Promise((resolve, reject) => {
-    User.register(volunteer, password, function (err) {
+    User.register(newUser, password, function (err) {
       if (err) {
         return reject(err);
       }
 
-      return resolve(volunteer);
+      return resolve(newUser);
     });
   });
 }
@@ -126,7 +118,6 @@ module.exports = Object.assign(User, {
         token: uuidV1(),
         scope: ['all'],
       });
-      // allow this to happen completely asyncronously
       user.save();
     }
   },
@@ -169,6 +160,26 @@ module.exports = Object.assign(User, {
                   }
                   resolve(user);
                 });
+    });
+  },
+  getOrCreate(o) {
+    // user {name, emailAddress, foreignKeyId}
+    User.findOne({ foreignKeyId: o.foreignKeyId }).then((user) => {
+      if (user) {
+        return user;
+      }
+      const newUser = new User({
+        name: o.name,
+        emailAddress: o.emailAddress,
+        foreignKeyId: o.foreignKeyId,
+      });
+      return newUser.save();
+    });
+  },
+  update(user) {
+    // user {name, emailAddress, foreignKeyId}
+    return User.update({ foreignKeyId: user.foreignKeyId },
+      { $set: { name: user.name, emailAddress: user.emailAddress, photo: user.photo },
     });
   },
 });

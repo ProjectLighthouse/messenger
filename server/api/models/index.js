@@ -13,10 +13,10 @@ try {
   logger.error('already connected to mongoose');
 }
 
-const Message = require('./conversation');
+const Conversation = require('./conversation');
 const User = require('./user');
 
 module.exports = {
-  Message,
+  Conversation,
   User,
 };
