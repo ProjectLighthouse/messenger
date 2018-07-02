@@ -5,3 +5,12 @@
 Services API for sending messages and group or private conversation
 ---
 
+#### Install
+`npm install`
+`npm install -g babel-cli`
+
+### run
+`npm run start`
+
+### eslint
+`npm run eslint`
