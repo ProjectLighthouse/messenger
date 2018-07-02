@@ -29,7 +29,7 @@ app.use('/', function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true);
   next();
 });
-
+// eslint-disable-next-line
 io.on('connection', function (socket) {
   console.log('socket.io connection made');
 });
