@@ -104,18 +104,19 @@ module.exports = Object.assign(Conversation, {
     return Conversation
     .findOne({ _id })
     .then((conversation) => {
-      return conversation.members;
+      return conversation.members || [];
     });
   },
   addMembers(_id, members) {
     const newMembers = members.map(m => {
-      return {
-        member: User.getOrCreate({
-          name: m.name,
-          email: m.email,
-          foreignKeyId: m._id,
-        })._id,
-      };
+      console.log(m);
+      const member = User.getOrCreate({
+        name: m.name,
+        email: m.email,
+        foreignKeyId: m._id,
+      });
+      console.log(member);
+      return { member };
     });
     return Conversation.update({ _id }, { $push: { members: newMembers } });
   },
