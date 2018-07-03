@@ -5,12 +5,33 @@
 Services API for sending messages and group or private conversation
 ---
 
+
 #### Install
-`npm install`
-`npm install -g babel-cli`
 
-### run
-`npm run start`
+To install the project dependencies, just enter the folder and run npm install
 
-### eslint
-`npm run eslint`
+```
+$ cd server/api
+
+$ npm install
+```
+
+#### Running mocha tests on message api
+
+To run the tests first we need to start the project and then run the test
+
+```
+$ npm start
+```
+
+```
+$ npm run test-local
+```
+
+### Checking code quality with eslint 
+
+To test the quality of the code, we can run the tests with *eslint*
+
+```
+$ npm run eslint
+```
