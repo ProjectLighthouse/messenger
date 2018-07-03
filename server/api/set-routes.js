@@ -9,7 +9,7 @@ module.exports = function (app) {
   }
 
   // creating a neew account
-  app.get('/api/', ConversationApi.getStatus);
+  app.get('/api/conversations/status', ConversationApi.getStatus);
 
   // Create's a conversation for my user (accepts recipients as array in the body; also accepts a reference id (such as organization id or opportunity id)
   app.post('/api/conversations', ConversationApi.newConversation);
@@ -32,7 +32,7 @@ module.exports = function (app) {
   // Leave a conversation
   app.post('/api/conversations/:conversationId/leave', ConversationApi.leaveConversation);
   // Retrieves all conversations by reference id
-  app.get('/api/:referenceId/conversations', ConversationApi.getConversationsByReference);
+  app.get('/api/conversations/references/:referenceId', ConversationApi.getConversationsByReference);
   // Get delivered status by messageId
   app.get('/api/conversations/:conversationId/:messageId/delivered', ConversationApi.getDeliveredStatus);
   // get delivered status by memberId
