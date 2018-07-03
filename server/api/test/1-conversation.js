@@ -63,6 +63,7 @@ describe('Conversation', function () {
   describe('GET /api/conversations/:conversationId/senders', function () {
     it('should retrieves all members of a conversation who have sent a message', function (done) {
       ConversationApi.getSenders(global.conversationId).then((conversation) => {
+        console.log(conversation);
         expect(conversation).to.be.ok;
         done();
       });
@@ -91,9 +92,9 @@ describe('Conversation', function () {
             foreignKeyId: globalForeignKeyId2,
           },
         ],
-      }).then((members) => {
-        expect(members).to.have.lengthOf(2);
-        expect(members).to.be.ok;
+      }).then((conversation) => {
+        expect(conversation.ok).to.equal(1);
+        expect(conversation).to.be.ok;
         done();
       });
     });
@@ -107,23 +108,6 @@ describe('Conversation', function () {
           expect(conversation).to.be.ok;
           done();
         });
-    });
-  });
-  describe('PUT /api/conversations/:foreignKeyId/members', function () {
-    it('should update an member detail', function (done) {
-      ConversationApi.updateMembers(global.globalForeignKeyId1,
-        {
-          member: {
-            name: 'UserUpdate',
-            email: 'joao.gabrielupdated@integritas.net',
-            photo: '',
-            permissions: [],
-          },
-        }
-      ).then((conversation) => {
-        expect(conversation).to.be.ok;
-        done();
-      });
     });
   });
   describe('POST /api/conversations/:conversationId/archive', function () {
@@ -142,9 +126,9 @@ describe('Conversation', function () {
       });
     });
   });
-  describe('GET /api/:referenceId/conversations', function () {
+  describe('GET /api/conversations/references/:referenceId', function () {
     it('should retrieves all conversations by reference id', function (done) {
-      ConversationApi.getConversationsByReference(global.globalReference).then((conversations) => {
+      ConversationApi.getConversationsByReference(globalReference).then((conversations) => {
         expect(conversations).to.be.ok;
         done();
       });
@@ -153,15 +137,7 @@ describe('Conversation', function () {
   describe('GET /api/conversations/:conversationId/:messageId/delivered', function () {
     it('should get delivered status by messageId', function (done) {
       ConversationApi.getDeliveredStatus(global.conversationId, global.messageId).then((conversations) => {
-        expect(conversations).to.be.ok;
-        done();
-      });
-    });
-  });
-  describe('GET /api/conversations/:conversationId/:foreignKeyId/delivered', function () {
-    it('should get delivered status by memberId', function (done) {
-      ConversationApi.getDeliveredStatusByMember(global.conversationId, global.globalRecipient).then((conversations) => {
-        expect(conversations).to.be.ok;
+        expect(conversations).to.be.an('array');
         done();
       });
     });
