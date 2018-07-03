@@ -44,7 +44,7 @@ module.exports = {
     return request.post(`/conversations/${conversationId}/leave`, body);
   },
   getConversationsByReference(referenceId) {
-    return request.get(`/${referenceId}/conversations`);
+    return request.get(`/conversations/references/${referenceId}`);
   },
   getDeliveredStatus(conversationId, messageId) {
     return request.get(`/conversations/${conversationId}/${messageId}/delivered`);
