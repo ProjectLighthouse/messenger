@@ -94,8 +94,8 @@ module.exports = {
   },
   getConversationsByReference(req, res) {
     const { referenceId } = req.params;
-    return Conversation.getConversationsByReference(referenceId).then((conversation) => {
-      return res.send(conversation);
+    return Conversation.getConversationsByReference(referenceId).then((conversations) => {
+      return res.send(conversations);
     });
   },
   getDeliveredStatus(req, res) {
@@ -105,9 +105,12 @@ module.exports = {
     });
   },
   getDeliveredStatusByMember(req, res) {
-    const { conversationId, foreignKeyId } = req.params;
-    return Conversation.getDeliveredStatusByMember(conversationId, foreignKeyId).then((conversation) => {
-      return res.send(conversation);
-    });
+    const { foreignKeyId, messageId } = req.params;
+    if( foreignKeyId && messageId ) {
+      return Conversation.getDeliveredStatusByMember(foreignKeyId, messageId).then((conversation) => {
+        return res.send(conversation);
+      });
+    }
+    return [];
   },
 };
