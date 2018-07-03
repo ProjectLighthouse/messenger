@@ -4,8 +4,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const RedisStore = require('connect-redis')(session);
-const favicon = require('serve-favicon');
-const path = require('path');
 
 const passport = require('passport');
 const LocalAPIKeyStrategy = require('passport-localapikey').Strategy;
@@ -95,6 +93,4 @@ module.exports = function (app) {
 
   app.use(passport.initialize());
   app.use(passport.session());
-
-  app.use(favicon(path.join(__dirname, 'favicon.ico')));
 };
