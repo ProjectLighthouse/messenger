@@ -106,7 +106,7 @@ module.exports = {
   },
   getDeliveredStatusByMember(req, res) {
     const { foreignKeyId, messageId } = req.params;
-    if( foreignKeyId && messageId ) {
+    if (foreignKeyId && messageId) {
       return Conversation.getDeliveredStatusByMember(foreignKeyId, messageId).then((conversation) => {
         return res.send(conversation);
       });

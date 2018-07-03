@@ -145,7 +145,7 @@ module.exports = Object.assign(Conversation, {
     });
   },
   getDeliveredStatus(_id, messageId) {
-    if(_id && messageId) {
+    if (_id && messageId) {
       return Conversation.findOne({ _id, 'messages._id': messageId }).lean().then((conversation) => {
         if (conversation) {
           return conversation.messages[0].delivered || [];
@@ -156,7 +156,7 @@ module.exports = Object.assign(Conversation, {
     return [];
   },
   getDeliveredStatusByMember(userId, messageId) {
-    if(userId && messageId) {
+    if (userId && messageId) {
       return Message.getMessageById(messageId).then(message => {
         return message.delivered.filter((d) => d.userId === userId) || [];
       });
