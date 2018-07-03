@@ -89,15 +89,15 @@ module.exports = Object.assign(Conversation, {
   getSenders(_id) {
     return Conversation
     .findOne({ _id })
-    .then((conversations) => {
+    .populate('messages.message')
+    .then((conversation) => {
+      console.log(conversation);
       let messages = [];
-      messages = [...messages, ...conversations.map((c) => {
-        return c.messages;
-      })];
+      messages = [...messages, ...conversation.messages];
       const senders = messages.map(m => {
         return m.sender;
       });
-      return senders;
+      return senders || [];
     });
   },
   getMembers(_id) {
@@ -113,7 +113,7 @@ module.exports = Object.assign(Conversation, {
       const member = User.getOrCreate({
         name: m.name,
         email: m.email,
-        foreignKeyId: m._id,
+        foreignKeyId: m.foreignKeyId,
       });
       console.log(member);
       return { member };
@@ -140,22 +140,28 @@ module.exports = Object.assign(Conversation, {
   getConversationsByReference(reference) {
     return Conversation
     .findOne({ reference })
-    .then((conversation) => {
-      return conversation;
+    .then((conversations) => {
+      return conversations;
     });
   },
   getDeliveredStatus(_id, messageId) {
-    return Conversation.findOne({ _id, 'messages._id': messageId }).lean().then((conversation) => {
-      if (conversation) {
-        return conversation.messages[0].delivered;
-      }
-      return [];
-    });
+    if(_id && messageId) {
+      return Conversation.findOne({ _id, 'messages._id': messageId }).lean().then((conversation) => {
+        if (conversation) {
+          return conversation.messages[0].delivered || [];
+        }
+        return [];
+      });
+    }
+    return [];
   },
-  getDeliveredStatusByMember(_id, userId, messageId) {
-    return Message.getMessageById(messageId).then(message => {
-      return message.delivered.filter((d) => d.userId === userId);
-    });
+  getDeliveredStatusByMember(userId, messageId) {
+    if(userId && messageId) {
+      return Message.getMessageById(messageId).then(message => {
+        return message.delivered.filter((d) => d.userId === userId) || [];
+      });
+    }
+    return [];
   },
   addDeliveredStatus(messageId, userId, body) {
     return Message.getMessageById(messageId).then(message => {
