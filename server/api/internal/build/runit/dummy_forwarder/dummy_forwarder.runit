@@ -1,0 +1,8 @@
+#!/bin/sh
+
+exec 2>&1
+
+mkdir -p /var/log/api
+
+exec tail -F /var/log/api/current > /dev/stdout
+

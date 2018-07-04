@@ -1,0 +1,9 @@
+#!/bin/sh
+# file: api/log/run
+
+# Collect all logs which come to stdout from the app
+exec 2>&1
+echo $(realpath $0) started
+
+mkdir /var/log/api 2>/dev/null
+exec svlogd -tt /var/log/api
