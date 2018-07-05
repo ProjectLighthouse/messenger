@@ -5,6 +5,14 @@
 Services API for sending messages and group or private conversation
 ---
 
+#### Configurations
+
+You need to have an active mongodb instance with a database called ```lighthouse_message```
+
+Create a .env file with the following fields:
+```
+MONGO_URI=mongodb://localhost/lighthouse_message
+```
 
 #### Install
 
